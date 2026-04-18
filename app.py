@@ -60,7 +60,6 @@ import time
 time.sleep(2)
 
 # Start app
-!python app.py &
 
 time.sleep(5)
 
