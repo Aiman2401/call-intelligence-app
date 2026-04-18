@@ -54,8 +54,7 @@ if __name__ == '__main__':
 print("✅ app.py created")
 
 
-# Kill old processes
-!pkill -f app.py
+
 
 import time
 time.sleep(2)
