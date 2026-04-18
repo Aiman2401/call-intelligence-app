@@ -1,7 +1,5 @@
-# Create minimal app
-with open("app.py", "w") as f:
-    f.write(
-'''from flask import Flask, request
+from flask import Flask, request
+import os
 
 app = Flask(__name__)
 
@@ -10,8 +8,7 @@ def index():
     if request.method == 'POST':
         transcript = request.form.get('transcript', '')
         if transcript:
-            lines = transcript.strip().split('\\n')
-
+            lines = transcript.strip().split('\n')
             total_lines = len(lines)
             agent_lines = len([l for l in lines if 'Agent' in l])
             lead_lines = len([l for l in lines if 'Lead' in l])
@@ -48,19 +45,10 @@ def index():
 """
 
 if __name__ == '__main__':
-    app.run(port=8501, host='0.0.0.0')
-''')
-
-print("✅ app.py created")
-
+    # Render uses the PORT environment variable
+    port = int(os.environ.get("PORT", 8501))
+    app.run(host='0.0.0.0', port=port)
 
 
-
-import time
-time.sleep(2)
-
-# Start app
-
-time.sleep(5)
 
 
