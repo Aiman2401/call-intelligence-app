@@ -3,7 +3,7 @@ import os
 import json
 import sqlite3
 import time
-import google.generativeai as genai
+
 
 app = Flask(__name__)
 
