@@ -1,5 +1,5 @@
 flask
 gunicorn
 uvicorn
-google-generativeai
+groq
 pydantic
