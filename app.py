@@ -7,8 +7,8 @@ import google.generativeai as genai
 
 app = Flask(__name__)
 
-# Configure Gemini
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+from groq import Groq
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # ============================================
 # DATABASE SETUP
@@ -76,32 +76,19 @@ Transcript:
 {transcript}"""
 
 def process_transcript(transcript, max_retries=5):
-    model = genai.GenerativeModel(
-        model_name='gemini-2.5-flash',
-        generation_config={
-            "temperature": 0.2,
-            "response_mime_type": "application/json",
-        }
-    )
     prompt = PROMPT_TEMPLATE.format(transcript=transcript)
-
     for attempt in range(max_retries):
         try:
-            response = model.generate_content(prompt)
-            raw = response.text.strip()
-
-            if raw.startswith("```json"):
-                raw = raw.split("```json", 1)[1]
-            if raw.startswith("```"):
-                raw = raw.split("```", 1)[1]
-            if "```" in raw:
-                raw = raw.split("```")[0]
-
-            return json.loads(raw.strip())
-
+            response = groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.2,
+                response_format={"type": "json_object"}
+            )
+            return json.loads(response.choices[0].message.content.strip())
         except Exception as e:
-            if "429" in str(e) or "quota" in str(e).lower():
-                wait = (2 ** attempt) * 10 + 5
+            if "429" in str(e) or "rate" in str(e).lower():
+                wait = (2 ** attempt) * 5
                 time.sleep(wait)
             else:
                 raise
